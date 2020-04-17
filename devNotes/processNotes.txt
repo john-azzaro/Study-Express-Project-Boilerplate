@@ -30,7 +30,7 @@ Phase 1: Project Setup
 =========================================================================================
 -- Setting up your project lays the foundation for the rest fo the project. The initial 
    steps involve installing npm, dependencies, development environment setup, and 
-   essential files like server.js, .gitignore, and .env.
+   creating custom scripts to run the application in certain environments.
 =========================================================================================
 
 /// Project Setup:                           
@@ -48,16 +48,22 @@ Phase 1: Project Setup
         6:  npm install --save-dev nodemon mocha chai supertest    -- Install initial development environment.
 
 /// Create custom "start" and "devStart" scripts in package.json:
-      7.1:  "devStart": "nodemon server.js"
-      7.2:  "start": "node src/server.js"  
-      7.3:  "test": "mocha"
+      7.1:  "devStart": "nodemon server.js"                        -- Run development environment with nodemon for application refresh.
+      7.2:  "start": "node src/server.js"                          -- Run production environment.
+      7.3:  "test": "mocha"                                        -- Run Mocha tests.
 
+
+
+Phase 2: Create Express application
+==========================================================================================
+-- 
+==========================================================================================
 
 /// Create an "src" directory:
-        6:  src                                                    -- Server code will be held in this src directory.
+        1:  src                                                    -- Server code will be held in this src directory.
 
 /// Create and setup "app.js" file:
-        7:  -----------------------------------------------------------------------
+        2:  -----------------------------------------------------------------------
           require('dotenv').config()                                              
           const express = require('express')
           const morgan = require('morgan')
@@ -78,7 +84,7 @@ Phase 1: Project Setup
         --------------------------------------------------------------------------
 
 /// Create a "server.js" file:
-        8: -----------------------------------------------------------------------
+      3: -----------------------------------------------------------------------
           const app = require('./app');
 
           const PORT = process.env.PORT || 8000
@@ -87,3 +93,22 @@ Phase 1: Project Setup
             console.log(`Server listening at http://localhost:${PORT}`)
           });
         --------------------------------------------------------------------------
+
+
+
+
+Phase 3: Create test folder (and initial tests):
+===========================================================================================
+-- 
+===========================================================================================
+
+/// Create a "test" folder for integration testing:
+    1:  --------------------------------------------------------------------------
+        src  >  test
+      ----------------------------------------------------------------------------
+
+/// Create Initial test for app.js:
+    2.  --------------------------------------------------------------------------
+
+    ------------------------------------------------------------------------------
+
