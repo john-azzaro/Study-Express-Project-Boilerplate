@@ -54,6 +54,7 @@ Phase 1: Project Setup
 
 
 
+
 Phase 2: Create Express application
 ==========================================================================================
 -- 
@@ -84,6 +85,10 @@ Phase 2: Create Express application
           app.use(helmet())
           app.use(cors())
 
+          app.get('/', (req, res) => {                                              // add initial GET route to test.
+            res.send('Hello, world!');
+          });
+
           module.exports = app;
        --------------------------------------------------------------------------
 
@@ -101,7 +106,7 @@ Phase 2: Create Express application
 
 
 
-Phase 3: Create test folder (and initial tests):
+Phase 3: Setup testing environment:
 ===========================================================================================
 -- 
 ===========================================================================================
@@ -117,7 +122,190 @@ Phase 3: Create test folder (and initial tests):
       ----------------------------------------------------------------------------
 
 /// Create Initial test for app.js:
-    2.  --------------------------------------------------------------------------
+    3.  --------------------------------------------------------------------------
+        const { expect } = require('chai')
+        const supertest = require('supertest')
+        const app = require('../src/app')
 
+        describe('App', () => {
+          it('GET / responds with 200 containing "Hello, world!"', () => {
+            return supertest(app)
+              .get('/')
+              .expect(200, 'Hello, world!')
+          })
+        })
     ------------------------------------------------------------------------------
 
+/// Try "npm test" to check if everything is working in GitBash!
+    4:  --------------------------------------------------------------------------
+        npm test
+      ----------------------------------------------------------------------------
+          * You should see a passing test in the console:
+            ------------------------------------------------------------
+              √ GET / responds with 200 containing "Hello, world!"
+              1 passing (31ms)
+            ------------------------------------------------------------
+
+/// For Multiple test files, require test.js file:
+    * In your package.json file, amend the test script to specify the following setupfile.
+    5:  --------------------------------------------------------------------------
+       "test": "mocha --require test/setup.js",
+    ------------------------------------------------------------------------------
+
+/// To run tests, run "npm test -- --watch":
+    6:  --------------------------------------------------------------------------
+        npm test -- --watch
+    ------------------------------------------------------------------------------
+
+
+
+
+Phase 4: Add Error-handling middleware:
+================================================================================================
+-- Adding this error-handling middleware should hide error messages from users and other parties.
+================================================================================================
+    1:  ----------------------------------------------------------------------------------
+        require("dotenv").config();
+        const express = require("express");
+        const morgan = require("morgan");
+        const cors = require("cors");
+        const helmet = require("helmet");
+
+        const app = express();
+
+        const morganOption = process.env.NODE_ENV === "production" ? "tiny" : "common";
+
+        app.use(morgan(morganOption));
+        app.use(helmet());
+        app.use(cors());
+
+        app.get("/", (req, res) => {
+          res.send("Hello, world!");
+        });
+
+        app.use(function errorHandler(error, req, res, next) {                                // error handling middleware.
+          let response;
+          if (process.env.NODE_ENV === "production") {
+            response = { error: { message: "server error" } };
+          } else {
+            console.error(error);
+            response = { message: error.message, error };
+          }
+          res.status(500).json(response);
+        });
+
+        module.exports = app;
+
+    ---------------------------------------------------------------------------------------
+
+
+
+Phase 5: Setup environment variables:
+=================================================================================================
+-- Environment variable can help us protect sensitive information within our program.
+=================================================================================================
+
+/// Create a new.env file named "example.env" and copy the contents of your .env into this one:
+  * Note that your current .env file is being ignored, so this one isnt being ignored because
+    it does not have anything sensitive in it.
+    1.  ------------------------------------------------------------------------------------
+        example.env
+    ----------------------------------------------------------------------------------------
+    
+/// Insert the content into example.env as follows:
+    2:  ------------------------------------------------------------------------------------
+        NODE_ENV=development
+        PORT=8000
+        EXAMPLE="example-environmental-variable"
+    ----------------------------------------------------------------------------------------
+
+/// Create a file called "config.js" to keep track of the values and set defaults:
+    3.  ------------------------------------------------------------------------------------
+        config.js
+    ----------------------------------------------------------------------------------------
+
+/// Add the following defaults to config.js:
+    4.  ------------------------------------------------------------------------------------
+        module.exports = {
+          PORT: process.env.PORT || 8000,
+          NODE_ENV: process.env.NODE_ENV || 'development',
+        }
+    ----------------------------------------------------------------------------------------
+
+/// Now refactor server.js to use the config.js file:
+    5.  ------------------------------------------------------------------------------------
+        const app = require('./app');
+
+        const { PORT } = require('./config');                                                 // Port impoted from config.js file.
+
+        app.listen(PORT, () => {
+          console.log(`Server listening at http://localhost:${PORT}`)
+        });
+    ----------------------------------------------------------------------------------------
+
+/// And refactor app.js to use the config.js file:
+    6.  ------------------------------------------------------------------------------------
+        require("dotenv").config();
+        const express = require("express");
+        const morgan = require("morgan");
+        const cors = require("cors");
+        const helmet = require("helmet");
+        const { NODE_ENV } = require('./config')                                            // import config.js as NODE_ENV.
+
+        const app = express();
+
+        const morganOption = (NODE_ENV === 'production') ? "tiny" : "common";               // If NODE_ENV is in the production environment, then...
+
+        app.use(morgan(morganOption));
+        app.use(helmet());
+        app.use(cors());
+
+        app.get("/", (req, res) => {
+          res.send("Hello, world!");
+        });
+
+        app.use(function errorHandler(error, req, res, next) {
+          let response;
+          if (NODE_ENV === 'production') {                                                   // If NODE_ENV is in the production environment, then...
+            response = { error: { message: "server error" } };
+          } else {
+            console.error(error);
+            response = { message: error.message, error };
+          }
+          res.status(500).json(response);
+        });
+
+        module.exports = app;
+    ----------------------------------------------------------------------------------------
+
+
+
+
+Phase 6: Setup for Heroku:
+==============================================================================================
+-- 
+==============================================================================================
+
+/// Create a Procfile in your root directory:
+    1.  -----------------------------------------------------------------------------------
+          Procfile
+    ---------------------------------------------------------------------------------------
+
+/// Inside Procfile, insert the following:
+    2.  -----------------------------------------------------------------------------------
+          web: node src/server.js
+    ---------------------------------------------------------------------------------------
+
+/// Insert Scripts for deployment to Heroku in package.json:
+    3.  -----------------------------------------------------------------------------------
+          "scripts": {
+            "test": "mocha --require test/setup.js",
+            "devStart": "nodemon src/server.js",
+            "start": "node src/server.js",
+            "start": "node src/server.js",
+            "predeploy": "npm audit",
+            "deploy": "git push heroku master"
+          },
+    ---------------------------------------------------------------------------------------
+
+    

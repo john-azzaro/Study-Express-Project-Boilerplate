@@ -4,9 +4,12 @@
   "description": "Express boilerplate for projects",
   "main": "server.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --require test/setup.js",
     "devStart": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "start": "node src/server.js",
+    "predeploy": "npm audit",
+    "deploy": "git push heroku master"
   },
   "repository": {
     "type": "git",
