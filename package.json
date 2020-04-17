@@ -1,0 +1,25 @@
+{
+  "name": "study-express-project-boilerplate",
+  "version": "1.0.0",
+  "description": "Express boilerplate for projects",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/john-azzaro/Study-Express-Project-Boilerplate.git"
+  },
+  "keywords": [
+    "express-boilerplate"
+  ],
+  "author": "John Azzaro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/john-azzaro/Study-Express-Project-Boilerplate/issues"
+  },
+  "homepage": "https://github.com/john-azzaro/Study-Express-Project-Boilerplate#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
